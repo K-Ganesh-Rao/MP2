@@ -1,16 +1,46 @@
 // Code your design here
-module(
+module viterbi(
   input clk,
-  output out
+ 
+  output reg [11:0]ans
   
   
 );
   reg [1:0]state;
   reg st;
+  wire [5:0] array;
+  integer i;
+
+  reg [1:0]out;
   
+
+	assign array[0]= 0;
+	assign array[1]= 1;
+	assign array[2]= 1;
+	assign array[3]= 1;
+	assign array[4]= 0;
+	assign array[5]= 0;
+
+ 
+ always@(posedge clk)
+ begin
+	for(i = 0 ; i<6 ;i=i+1)begin
+	 st <= array[i];
+	 ans <= ans << 2 ;
+	 ans <= ans| out;
+	
+ end
+ end
+   
+	
+initial begin 
+state = 0;
+out = 0;
+end
+
   always@(posedge clk)
     begin
-	 repeat(7)begin
+
       case(state)
         2'b00:
           begin
@@ -56,12 +86,12 @@ module(
 					out <= 2'b01;
 				end
            else if(st ==1)begin
-				state <= 2b11;
-				out <= 2b10;
+				state <= 2'b11;
+				out <= 2'b10;
 				end				
           end
-          
-    end
+      endcase    
+
   end
   
   
