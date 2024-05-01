@@ -15,40 +15,44 @@ module(
           begin
             if(st ==1)begin
 				
-				end
-           else if(st ==0)begin
+		end
+           else 
+	if(st ==0)begin
 				
-				end				
+	end				
           end
           
         01:
           begin
             if(st ==1)begin
 				
-				end
-           else if(st ==0)begin
+		end
+           else 
+		if(st ==0)begin
 				
-				end				
+		end				
           end
         
         10:
           begin
             if(st ==1)begin
 				
-				end
-           else if(st ==0)begin
+		end
+           else 
+		if(st ==0)begin
 				
-				end				
+		end				
           end
           
         11:
           begin
             if(st ==1)begin
 				
-				end
-           else if(st ==0)begin
+		end
+           else 
+		if(st ==0)begin
 				
-				end				
+		end				
           end
     end
   
