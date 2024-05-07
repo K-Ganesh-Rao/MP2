@@ -10,21 +10,22 @@ module viterbi(
 reg [1:0]state;
 reg st;
 reg  [0:0] array [5:0];
-reg [0:2]i;
-reg next_state;
+reg [2:0]i;
+reg [1:0]next_state;
 reg [1:0]out;
 reg reset;
-
+//wire next_state1;
   
 initial begin 
 state = 0;
 out = 0;
 next_state = 0;
-reset = 1;
+//reset = 1;
 i = 0;
+ans = 0;
 end
 
-initial begin
+always@(posedge clk)begin
  array[0]= 1'b0;
  array[1]= 1'b1;
  array[2]= 1'b1;
@@ -33,24 +34,24 @@ initial begin
  array[5]= 1'b0;
 end
  
- always@(posedge state)
+ always@(posedge clk)
  begin
 //	for(i = 0 ; i<6 ;i=i+1)begin
 //	 st <= array[i];
 //	 ans <= ans << 2 ;
 //	 ans <= ans| out;
-   ans  <= ans << 2;
-	ans <= {ans[9:0] , out};
+   ans  = ans << 2;
+	ans = {ans[9:0] , out};
 	
 	
 //	end
  end
    
 	
-always@(state or reset )
+always@(state,st )
     begin
 
-      case(state)
+      case(state )
         2'b00:
           begin
             if(st ==0)begin
@@ -103,14 +104,27 @@ always@(state or reset )
 
   end
   
+ // assign next_state1 = next_state;
   
-always@(posedge clk )begin
-	state = next_state;
-	st = array[i];
-	reset = reset + 1;
-	i = i + 1;
-//	next_state = next_state+1;
+always@(posedge clk )begin 		
+	state <= next_state; 
+	end
+	
 
+always@( posedge clk)begin
+	if(i < 6)begin
+		st= array[i];
+	//reset <= reset + 1;
+	//i = i + 1;
+//	next_state = next_state+1;
+		end
+		else begin
+			
+			i = 0;
+			
+		end
+		//reset <= reset + 1;
+	   i = i + 1;
 end
 
   
