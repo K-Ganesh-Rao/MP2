@@ -40,7 +40,7 @@ end
 //	 st <= array[i];
 //	 ans <= ans << 2 ;
 //	 ans <= ans| out;
-   ans  = ans << 2;
+   //ans  = ans << 2;
 	ans = {ans[9:0] , out};
 	
 	
