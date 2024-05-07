@@ -105,6 +105,7 @@ always@(state,st )
   end
   
  // assign next_state1 = next_state;
+ //
   
 always@(posedge clk )begin 		
 	state <= next_state; 
