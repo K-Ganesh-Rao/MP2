@@ -6,7 +6,7 @@ module modulo_2_adder (
 
   assign sum = a ^ b;
 
-endmodule 
+endmodule  
 
 
 module test_modulo_2_adder;
