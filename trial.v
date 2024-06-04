@@ -1,4 +1,4 @@
-module viterbi_decoder(
+6module viterbi_decoder(
 	input clk,
 	output [0:4] out
 
@@ -25,6 +25,29 @@ initial begin
 state = 00;
 
 end
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+always@(posedge clk )begin
+matrix[0][0] = 0; matrix[0][1] = 1 ; matrix[0][2] = 2; matrix[0][3] = 2;  matrix[0][4] = 2; matrix[0][5] = 3;
+
+matrix[1][0] = 16; matrix[1][1] = 16 ; matrix[1][2] = 2; matrix[1][3] = 2;  matrix[1][4] = 2; matrix[1][5] = 3;
+
+matrix[2][0] = 16; matrix[2][1] = 1 ; matrix[2][2] = 2; matrix[2][3] = 2;  matrix[2][4] = 2; matrix[2][5] = 3;
+
+matrix[3][0] = 16; matrix[3][1] = 16 ; matrix[3][2] = 2; matrix[3][3] = 2;  matrix[3][4] = 2; matrix[3][5] = 3;
+
+
+
+end
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+always@(posedge clk)begin
+	for(c = 5; c = 0 ;c =c-1)begin
+		for(d = )
+		
+	end
+end
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 always@(diff)begin
 matrix[0][0] = 0;
@@ -32,31 +55,33 @@ for(
 matrix[i][j] = hw;
 end
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-always@(posedge state)begin
-if(state == 00)begin
-	next_state1 = 00;
-	next_state2 = 10;
-end
-if(state == 01)begin
-	next_state1 = 00;
-	next_state2 = 10;
-end
-if(state == 10)begin
-	next_state1 = 01;
-	next_state2 = 11;
-end
-if(state == 11)begin
-	next_state1 = 01;
-	next_state2 = 11;
-end
-
-end
+//always@(posedge state)begin
+//if(state == 00)begin
+//	next_state1 = 00;
+//	next_state2 = 10;
+//end
+//if(state == 01)begin
+//	next_state1 = 00;
+//	next_state2 = 10;
+//end
+//if(state == 10)begin
+//	next_state1 = 01;
+//	next_state2 = 11;
+//end
+//if(state == 11)begin
+//	next_state1 = 01;
+//	next_state2 = 11;
+//end
+//
+//end
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-always@(state)begin
-    case ({in, gout})
+
+function [1:0] BM (input [1:0] tout, rec_parity)
+//always@(state)begin
+//    case ({tout, rec_parity})
         4'b0000: BM = 2'b00; // BM(00,00) = 0
         4'b0100: BM = 2'b01; // BM(01,00) = 1
         4'b1000: BM = 2'b01; // BM(10,00) = 1
@@ -77,8 +102,84 @@ always@(state)begin
         4'b1011: BM = 2'b01; // BM(10,11) = 1
         4'b1111: BM = 2'b00; // BM(11,11) = 0
 	
-end
+//end
+endfunction
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+assign diff = BM;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+always @* begin
+    count1 = 0;
+    for (int a = 0; a < 2; a = a + 1) begin
+        if (bit1[a] != parity_bit[a]) begin
+            count1 = count1 + 1;
+        end
+    end
+end
+
+always @* begin
+    count2 = 0;
+    for (int b = 0; b < 2; b = b + 1) begin
+        if (bit2[b] != parity_bit[b]) begin
+            count2 = count2 + 1;
+        end
+    end
+end
+
+
+assign bit1 = out1;
+assign bit2  = out2;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	
+always@(state,st )
+    begin
+
+      case(state1 )
+        2'b00:
+          begin
+				next_state1 = 2'b00;
+				out1 = 2'b00;
+//				p1 = 0;
+				next_state2 = 2'b10;
+				out2 = 2'b11;
+				
+				end				
+          
+          
+        2'b01:
+          begin
+				next_state1 = 2'b00;
+				out1 = 2'b11;
+				next_state2 = 2'b10;
+				out2 = 2'b00;
+          end
+          
+        2'b10:
+          begin
+				next_state1 = 2'b01;
+				out1 = 2'b10;
+				next_state2 = 2'b11;
+				out2 = 2'b01;
+				end				
+          
+          
+        2'b11:     
+		  begin
+				next_state1 = 2'b01;
+				out1 = 2'b01;
+				next_state2 = 2'b11;
+				out2 = 2'b10;
+				end				
+      endcase    
+
+  end
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 always@(state )
     begin
