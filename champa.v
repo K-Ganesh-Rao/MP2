@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 
 module test1 (
   input  clk,
