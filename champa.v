@@ -1,4 +1,4 @@
-
+`timescale 1ns / 1ps
 
 module test1 (
   input  clk,
@@ -9,7 +9,7 @@ module test1 (
 reg [11:0] cw [0:15]; // Array to hold codewords
 reg [3:0] hd_a [0:15]; // Array to hold Hamming distances
 reg [3:0] hd, min;
-reg [3:0] i, j;
+reg [4:0] i, j;
 reg [1:0] state;
 
 parameter IDLE = 2'b00, CALC_HD = 2'b01, FIND_MIN = 2'b10, DECODE = 2'b11;
