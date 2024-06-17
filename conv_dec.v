@@ -1,92 +1,102 @@
-//`timescale 1ns / 1ps // Adjust timescale as needed
+
 
 module test1 (
   input  clk,
-//  input reg reset,
-  input  [11:0] received_bits, // Received bits (2 bits)
-  output reg [3:0]decoded_bit // Decoded bit output
+  input  [11:0] received_bits, // Received bits (12 bits)
+  output reg [3:0] decoded_bit // Decoded bit output
 );
 
+reg [11:0] cw [0:15]; // Array to hold codewords
+reg [3:0] hd_a [0:15]; // Array to hold Hamming distances
+reg [3:0] hd, min;
+reg [4:0] i, j;
+reg [11:0] diff;
+reg [1:0] state;
 
-reg [3:0] msg[15:0];
-wire [11:0] cw [15:0];
-reg [3:0] hd_a [15:0]; 
-reg [3:0] hd,min;
-reg [3:0] i,j,k,l;
-reg flag1,flag2;
-///////////////////////////////////////////////////////////////////////////////////////
+parameter IDLE = 2'b00, CALC_HD = 2'b01, FIND_MIN = 2'b10, DECODE = 2'b11;
+
 initial begin
-hd = 0;
-min = 4'b1111;
+  hd = 0;
+  min = 4'b1111;
+  state = IDLE;
+  i = 0;
+  j = 0;
+  diff = 0;
+  decoded_bit = 0;
 
+  // Initialize the codewords
+  cw[0]  <= 12'b000000000000;
+  cw[1]  <= 12'b000000111011;
+  cw[2]  <= 12'b000011101100;
+  cw[3]  <= 12'b000011010111;
+  cw[4]  <= 12'b001110110000;
+  cw[5]  <= 12'b001110001011;
+  cw[6]  <= 12'b001101011100;
+  cw[7]  <= 12'b001101100111;
+  cw[8]  <= 12'b111011000000;
+  cw[9]  <= 12'b111011111011;
+  cw[10] <= 12'b111000101100;
+  cw[11] <= 12'b111000010111;
+  cw[12] <= 12'b110101110000;
+  cw[13] <= 12'b110101001011;
+  cw[14] <= 12'b110110011100;
+  cw[15] <= 12'b110110100111;
 end
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-assign cw[0] =  12'b000000000000;
-assign cw[1] =  12'b000000111011;
-assign cw[2] =  12'b000011101100;
-assign cw[3] =  12'b000011010111;
-assign cw[4] =  12'b001110110000;
-assign cw[5] =  12'b001110001011;
-assign cw[6] =  12'b001101011100;
-assign cw[7] =  12'b001101100111;
-assign cw[8] =  12'b111011000000;
-assign cw[9] =  12'b111011111011;
-assign cw[10] = 12'b111000101100;
-assign cw[11] = 12'b111000010111;
-assign cw[12] = 12'b110101110000;
-assign cw[13] = 12'b110101001011;
-assign cw[14] = 12'b110110011100;
-assign cw[15] = 12'b110110100111;
-
-
-
-always @(posedge clk)begin
-if(flag1 == 0)begin
-	for( j = 4'd0; j< 5'd16 ; j = j+4'd1)begin
-	
-//    hd = 0;
-    for ( i = 4'd0; i < 4'd12; i = i + 4'd1) begin
-        if (cw[i] != received_bits[i]) begin
-            hd = hd + 4'd1;
-        end
+always @(posedge clk) begin
+  case(state)
+    IDLE: begin
+      // Reset variables
+      hd <= 0;
+      min <= 4'b1111;
+      i <= 0;
+      j <= 0;
+		diff = 0;
+      state <= CALC_HD;
     end
-	 hd_a[j] = hd;
-end
-	
-end
-	flag1 = 1;
-end
-//end
-
-
-always@(posedge clk)begin
-if(flag1 == 1)begin
-	if(flag2 == 0)begin
-//		min = 1111;
-		for( k = 5'd0; k < 5'd16 ; k = k+5'd1 )begin
-			if(hd_a[k] < min  && hd_a[k] != 0)
-				min = hd_a[k];
-			else
-				min = min;
-		
+    
+    CALC_HD: begin
+	 if(j < 16)begin
+			diff = cw[j] ^ received_bits ;
+			hd = diff[0]+diff[1]+diff[2]+diff[3]+diff[4]+diff[5]+diff[6]+diff[7]+diff[8]+diff[9]+diff[10]+diff[11] ;
+			hd_a[j] = hd;
+			j = j + 1;
+	 end
+		else begin
+			state = FIND_MIN;
+			j = 0;
+			diff = 0;
 		end
-		flag2 = 1;
-	end
-	else if(flag2 == 1)begin
-		for ( l=0; l<16; l = l+1)begin
-			if(hd_a[l]	== min)begin
-				decoded_bit = l;
-				
-			end
 			
-		end
-//			flag2 = 0 ;
 	end
-	
-end
 
+    FIND_MIN: begin
+      if (j < 16) begin
+        if (hd_a[j] < min && hd_a[j] != 0) begin
+          min <= hd_a[j];
+        end
+//        j = j + 1;
+      end else begin
+        state <= DECODE;
+        j <= 0;
+      end
+		 j <= j + 1;
+    end
+
+    DECODE: begin
+      if (j < 16) begin
+        if (hd_a[j] == min) begin
+          decoded_bit <= j;
+        end
+//        j = j + 1;
+      end
+//			else begin
+//        state <= IDLE;
+//      end
+		 j <= j + 1;
+    end
+
+  endcase
 end
 
 endmodule
